@@ -1,0 +1,68 @@
+swagger: "2.0"
+info:
+  description: "Swagger file for Rastsislau Mazda store"
+  version: "1.0.0"
+  title: "Swagger for Mazda store"
+  termsOfService: "http://swagger.io/terms/"
+host: "de06mffl00.execute-api.eu-west-1.amazonaws.com"
+tags:
+- name: "product"
+  description: "Products at shop"
+schemes:
+- "https"
+paths:
+  /products:
+    get:
+      tags:
+      - "product"
+      summary: "Get all products"
+      produces:
+      - "text/plain"
+      parameters: []
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product' 
+  /products/{productId}:
+    get:
+      tags:
+      - "product"
+      summary: "Get product by id"
+      produces:
+      - "text/plain"
+      parameters:
+      - name: "productId"
+        in: "path"
+        description: "The productId that needs to be fetched. Use 7567ec4b-b10c-48c5-9345-fc73c48a80a2 for testing."
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Product"
+        "400":
+          description: "Bad request"
+        "404":
+          description: "Product with id ${productId} is not found"
+definitions:
+  Product:
+    type: "object"
+    properties:
+      count:
+        type: "integer"
+        format: "int64"
+      id:
+        type: "string"
+      description:
+        type: "string"
+      price:
+        type: "integer"
+        format: "int64"
+      title:
+        type: "string"
+    xml:
+      name: "User"
