@@ -1,5 +1,6 @@
-import {getProductsById} from '../handlers/getProductsById.js';
+import {getProductsById} from '../handlers/getProductsById';
 import {productList} from '../mocks/productListMocks';
+import {APIGatewayEvent} from 'aws-lambda';
 
 describe('Test productById', () => {
     it('should return correct data', async () => {
@@ -8,7 +9,7 @@ describe('Test productById', () => {
             pathParameters: {
                 productId: productId
             }
-        };
+        } as unknown as APIGatewayEvent;
         const productResult = productList.find(product => product.id === productId);
         const expectedResult = {
             statusCode: 200,
@@ -26,7 +27,7 @@ describe('Test productById', () => {
             pathParameters: {
                 productId: productId
             }
-        };
+        } as unknown as APIGatewayEvent;
         const expectedResult = {
             statusCode: 400,
             body: JSON.stringify({
@@ -46,7 +47,7 @@ describe('Test productById', () => {
             pathParameters: {
                 productId: productId
             }
-        };
+        } as unknown as APIGatewayEvent;
         const expectedResult = {
             statusCode: 404,
             body: JSON.stringify({

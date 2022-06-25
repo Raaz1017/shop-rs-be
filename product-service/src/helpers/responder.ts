@@ -1,5 +1,10 @@
+interface ResponderPayload {
+    code: number,
+    message: any
+}
+
 export class Responder {
-    errorResponse({code, message}) {
+    errorResponse({code, message}: ResponderPayload) {
         const responseBody = this.getErrorBody(code, message);
 
         return {
@@ -8,14 +13,14 @@ export class Responder {
         }
     }
 
-    successResponse({code, message}) {
+    successResponse({code, message}: ResponderPayload) {
         return {
             statusCode: code,
             body: JSON.stringify(message)
         }
     }
 
-    getErrorBody(code, message) {
+    getErrorBody(code: number, message: string) {
         return {
             code: code,
             message: message

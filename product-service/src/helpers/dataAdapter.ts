@@ -1,4 +1,4 @@
-import {productList} from '../mocks/productListMocks.js';
+import {productList} from '../mocks/productListMocks';
 
 export async function productListAsyncAdapter() {
     return new Promise((resolve) => {

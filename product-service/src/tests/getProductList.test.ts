@@ -1,5 +1,5 @@
-import {getProductsList} from '../handlers/getProductsList.js';
-import {productList} from '../mocks/productListMocks.js';
+import {getProductsList} from '../handlers/getProductsList';
+import {productList} from '../mocks/productListMocks';
 
 describe('get list of all products', () => {
     it('should return correct list', async function () {
