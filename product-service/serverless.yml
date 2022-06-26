@@ -1,5 +1,6 @@
 service: product-service
 frameworkVersion: '3'
+useDotenv: true
 
 provider:
   name: aws
@@ -8,17 +9,24 @@ provider:
   region: eu-west-1
   httpApi:
     cors: true
+  environment:
+    DB_USER: ${env.DB_USER}
+    DB_HOST: ${env.DB_HOST}
+    DB_DATABASE_NAME: ${env.DB_DATABASE_NAME}
+    DB_PASSWORD: ${env.DB_PASSWORD}
+    DB_PORT: ${env.DB_PORT}
 
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
-    includeModules: false
+    includeModules: true
 
 package:
   individually: true
 
 plugins:
   - serverless-webpack
+  - serverless-dotenv-plugin
 
 #custom:
 #  webpackIncludeModules: true
@@ -58,15 +66,26 @@ functions:
   getProductsList:
     handler: handler.getProductsList
     events:
-      - httpApi:
+      - http:
           path: /products
           method: get
+          cors: true
+
   getProductsById:
     handler: handler.getProductsById
     events:
-      - httpApi:
+      - http:
           path: /products/{productId}
           method: get
+          cors: true
+
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          path: /products
+          method: post
+          cors: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
