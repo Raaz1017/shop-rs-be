@@ -1,0 +1,55 @@
+service: import-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: eu-west-1
+  httpApi:
+    cors: true
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:ListBucket"
+          Resource:
+            - "arn:aws:s3:::product-shop-rs"
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - "arn:aws:s3:::product-shop-rs/*"
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+package:
+  individually: true
+
+plugins:
+  - serverless-webpack
+
+functions:
+  importProductsFile:
+    handler: handler.importProductsFile
+    events:
+      - http:
+          path: /import
+          method: get
+          request:
+            parameters:
+              querystrings:
+                name: true
+  importFileParser:
+    handler: handler.importFileParser
+    events:
+      - s3:
+          bucket: product-shop-rs
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
