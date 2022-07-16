@@ -1,5 +1,6 @@
 service: import-service
 frameworkVersion: '3'
+useDotenv: true
 
 provider:
   name: aws
@@ -8,6 +9,9 @@ provider:
   region: eu-west-1
   httpApi:
     cors: true
+  environment:
+    SQS_URL: ${env.SQS_URL}
+    SQS_ARN: ${env.SQS_ARN}
   iam:
     role:
       statements:
@@ -21,6 +25,9 @@ provider:
             - "s3:*"
           Resource:
             - "arn:aws:s3:::product-shop-rs/*"
+        - Effect: "Allow"
+          Action: "sqs:*"
+          Resource: "arn:aws:sqs:eu-west-1:248058432125:catalogItemsQueue"
 
 custom:
   webpack:
@@ -32,6 +39,7 @@ package:
 
 plugins:
   - serverless-webpack
+  - serverless-dotenv-plugin
 
 functions:
   importProductsFile:

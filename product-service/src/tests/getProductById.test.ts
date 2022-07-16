@@ -1,6 +1,8 @@
 import {getProductsById} from '../handlers/getProductsById';
 import {productList} from '../mocks/productListMocks';
 import {APIGatewayEvent} from 'aws-lambda';
+import {productsRepository} from '../dataAccess/productsRepository';
+import {responder} from '../helpers/responder';
 
 describe('Test productById', () => {
     it('should return correct data', async () => {
@@ -11,10 +13,9 @@ describe('Test productById', () => {
             }
         } as unknown as APIGatewayEvent;
         const productResult = productList.find(product => product.id === productId);
-        const expectedResult = {
-            statusCode: 200,
-            body: JSON.stringify(productResult),
-        }
+        const expectedResult = responder.successResponse({code: 200, message:productResult });
+
+        productsRepository.getProductById = jest.fn().mockImplementationOnce(() => productResult);
 
         const result = await getProductsById(mockEvent);
 
@@ -28,13 +29,7 @@ describe('Test productById', () => {
                 productId: productId
             }
         } as unknown as APIGatewayEvent;
-        const expectedResult = {
-            statusCode: 400,
-            body: JSON.stringify({
-                code: 400,
-                message: 'Bad request'
-            })
-        }
+        const expectedResult = responder.errorResponse({message: 'Bad request', code: 400})
 
         const result = await getProductsById(mockEvent);
         expect(result.statusCode).toEqual(expectedResult.statusCode);
@@ -42,7 +37,7 @@ describe('Test productById', () => {
     })
 
     it('should return error with status code 404', async () => {
-        const productId = 'test';
+        const productId = '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d';
         const mockEvent = {
             pathParameters: {
                 productId: productId
@@ -55,6 +50,7 @@ describe('Test productById', () => {
                 message: `Product with id ${productId} is not found`
             })
         }
+        productsRepository.getProductById = jest.fn().mockImplementationOnce(() => null);
 
         const result = await getProductsById(mockEvent);
         expect(result.statusCode).toEqual(expectedResult.statusCode);

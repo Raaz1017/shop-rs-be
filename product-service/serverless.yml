@@ -15,6 +15,48 @@ provider:
     DB_DATABASE_NAME: ${env.DB_DATABASE_NAME}
     DB_PASSWORD: ${env.DB_PASSWORD}
     DB_PORT: ${env.DB_PORT}
+    SNS_ARN:
+      Ref: CreateProductTopic
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action: "sqs:*"
+      Resource:
+        - Fn::GetAtt: [CatalogItemsQueue, Arn]
+    - Effect: Allow
+      Action: "sns:*"
+      Resource:
+        Ref: CreateProductTopic
+
+resources:
+  Resources:
+    CatalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+        VisibilityTimeout: 120
+    CreateProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: createProductTopic
+    CreateProductSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: test.aws1@yandex.by
+        Protocol: email
+        TopicArn:
+          Ref: CreateProductTopic
+    CreateProductSubscriptionHighlyCosts:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: test.aws2@yandex.by
+        Protocol: email
+        TopicArn:
+          Ref: CreateProductTopic
+        FilterPolicy:
+          type:
+            - highly_cost
+
 
 custom:
   webpack:
@@ -86,6 +128,16 @@ functions:
           path: /products
           method: post
           cors: true
+
+  catalogBatchProcess:
+    handler: handler.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt:
+              - CatalogItemsQueue
+              - Arn
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

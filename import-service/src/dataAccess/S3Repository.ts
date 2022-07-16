@@ -1,6 +1,8 @@
 import AWS, {S3} from 'aws-sdk';
 import stream from 'node:stream';
 import csv from 'csv-parser';
+import {sqsRepository} from './SQSRepository';
+import {ImportProductPayload} from '../contracts/interfaces';
 
 
 export class S3Repository {
@@ -35,9 +37,19 @@ export class S3Repository {
             const s3Stream: stream.Readable = this.s3.getObject(params).createReadStream();
 
             s3Stream
-                .pipe(csv())
-                .on('data', (data) => {
+                .pipe(csv({
+                    separator: ';',
+                    headers: ['title', 'description', 'price', 'count']
+                }))
+                .on('data', async (data: any) => {
                     console.log(`Data chunk: ${JSON.stringify(data)}`);
+                    const dataForProcessing: ImportProductPayload = {
+                        title: data.title,
+                        count: data.count,
+                        description: data.description,
+                        price: data.price
+                    }
+                    await sqsRepository.sendCsvDataToProcessor(dataForProcessing);
                 })
                 .on('error', (err: Error) => {
                     console.error(`Error in reading data: ${err}`);
