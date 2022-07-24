@@ -1,14 +1,14 @@
-##Task 6:
+##Task 7:
 Implemented all services and all tasks. Could be tested with FE(https://d3swhvug1y217z.cloudfront.net/) by importing following
 CSV file: https://drive.google.com/file/d/15YCPee07CSkIvQ3i12-bjeyUFi7vrQQU/view?usp=sharing
 
 - FE available at: https://d3swhvug1y217z.cloudfront.net/
+PR for FE: https://github.com/Raaz1017/shop-react-redux-cloudfront-rs/pull/5/files
 
-Email accounts for testing (@yandex.by):
-Login: test.aws1; Password: Yr65gwbCp6vRXNR
-Login: test.aws2; Password: Yr65gwbCp6vRXNR
+raaz1017:TEST_PASSWORD -> cmFhejEwMTc6VEVTVF9QQVNTV09SRA== (base64 of username:password)
 
+LocalStorage should contain:
+authorization_token: cmFhejEwMTc6VEVTVF9QQVNTV09SRA==
 
 Additional tasks:
-+1 - catalogBatchProcess lambda is covered by unit tests
-+1 - set a Filter Policy for SNS createProductTopic in serverless.yml (if batch total cost, higher than 2000, email will be also send to test.aws2@yandex.by)
++1 - Client application should display alerts for the responses in 401 and 403 HTTP statuses.
