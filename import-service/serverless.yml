@@ -29,6 +29,19 @@ provider:
           Action: "sqs:*"
           Resource: "arn:aws:sqs:eu-west-1:248058432125:catalogItemsQueue"
 
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+
 custom:
   webpack:
     webpackConfig: ./webpack.config.js
@@ -52,6 +65,12 @@ functions:
             parameters:
               querystrings:
                 name: true
+          cors: true
+          authorizer:
+            arn: "arn:aws:lambda:eu-west-1:248058432125:function:authorization-service-dev-basicAuthorizer"
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            type: token
   importFileParser:
     handler: handler.importFileParser
     events:
